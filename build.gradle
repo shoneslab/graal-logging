@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'base'
+    id 'application'
+    id 'com.palantir.graal' version '0.6.0'
+}
+
+group 'com.shoneslabs.automation'
+version '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.compilerArgs += ["-Aproject=${project.name}"]
+}
+
+ext {
+    javaMainClass = "com.shoneslabs.automation.Main"
+}
+
+// use JUnit 5 platform
+test {
+    useJUnitPlatform()
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+graal {
+    mainClass javaMainClass
+    outputName 'crauto'
+    option("-H:IncludeResources=db/.*|static/.*|templates/.*|.*.yml|.*.xml|.*/org/sqlite/.*|org/sqlite/.*")
+    option("--allow-incomplete-classpath")
+    option("--initialize-at-build-time=org.sqlite.JDBC")
+    option("--initialize-at-build-time=org.sqlite.core.DB\$ProgressObserver")
+    option("--initialize-at-build-time=org.sqlite.core.DB")
+    option("--initialize-at-build-time=org.sqlite.core.NativeDB")
+    option("--initialize-at-build-time=org.sqlite.ProgressHandler")
+    option("--initialize-at-build-time=org.sqlite.Function")
+    option("--initialize-at-build-time=org.sqlite.Function\$Aggregate")
+    option("--initialize-at-build-time=org.sqlite.Function\$Window")
+    option("--initialize-at-run-time=org.tinylog")
+    option("--initialize-at-run-time=org.slf4j,org.apache.logging.log4j,ch.qos.logback")
+    option("-H:+AllowVMInspection")
+    option("-H:IncludeResources=config/.*|resources/tinylog.properties")
+    option("--allow-incomplete-classpath")
+    option("-H:+ReportUnsupportedElementsAtRuntime")
+    option("-H:EnableURLProtocols=http")//, usageHelp = true
+    option("--enable-all-security-services")
+    option("-Dfile.encoding=UTF-8")
+    option("--no-server")
+    //	option("-J-Xmx5G")
+}
+
+dependencies {
+   // runtime 'ch.qos.logback:logback-core:1.2.3' //contains the basic logging functionality
+    //runtime  'ch.qos.logback:logback-classic:1.2.3' //contains additional logging improvements, such as slf4j support
+
+    //Log4j2
+    //implementation 'org.apache.logging.log4j:log4j-core:2.13.1' //logging
+    //implementation 'org.apache.logging.log4j:log4j-api:2.13.1' //logging
+    //implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.1'  //testCompile
+
+    //tinylog
+    implementation 'org.tinylog:tinylog-api:2.1.0'
+    implementation 'org.tinylog:tinylog-impl:2.1.0'
+
+    //flogger
+    //implementation 'com.google.flogger:flogger:0.5'
+    //implementation 'com.google.flogger:flogger-system-backend:0.5'
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = javaMainClass
+}
